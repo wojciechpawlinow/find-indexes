@@ -16,6 +16,7 @@ assuming that conformation is at 10% level.
 - [gin](https://github.com/gin-gonic/gin) - The web framework used
 - [viper](https://github.com/spf13/viper) - Configuration management
 - [di](https://github.com/sarulabs/di) - Dependency injection framework
+- [zap](https://pkg.go.dev/go.uber.org/zap) - Logging
 
 ## Usage
 
