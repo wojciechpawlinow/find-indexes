@@ -14,6 +14,7 @@ type mockConfig struct {
 
 func (m *mockConfig) GetString(key string) string {
 	args := m.Called(key)
+
 	return args.String(0)
 }
 
@@ -34,9 +35,9 @@ func TestSetup(t *testing.T) {
 			mockCfg.On("GetString", "log_level").Return(tt.logLevel)
 
 			Setup(mockCfg)
-			assert.NotNil(t, logger, "logger should be initialized")
+			assert.NotNil(t, l, "logger should be initialized")
 
-			logger = nil
+			l = nil
 		})
 	}
 }

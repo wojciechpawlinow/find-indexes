@@ -9,12 +9,13 @@ import (
 	"github.com/wojciechpawlinow/find-indexes/internal/config"
 )
 
-var logger *zap.SugaredLogger
+var l *zap.SugaredLogger
 
 // Setup initializes the logging infrastructure based on the provided configuration.
 // It should be called once during the startup of the application.
 func Setup(cfg config.Provider) {
 	var level zapcore.Level
+
 	switch cfg.GetString("log_level") {
 	case "debug":
 		level = zapcore.DebugLevel
@@ -31,26 +32,26 @@ func Setup(cfg config.Provider) {
 		zapcore.Lock(os.Stdout),
 		level,
 	)
-	l := zap.New(core)
-	logger = l.Sugar()
+
+	l = zap.New(core).Sugar()
 }
 
 // Debug logs a debug message with the given fields.
 func Debug(args ...interface{}) {
-	logger.Debug(args...)
+	l.Debug(args...)
 }
 
 // Info logs an informational message with the given fields.
 func Info(args ...interface{}) {
-	logger.Info(args...)
+	l.Info(args...)
 }
 
 // Error logs an error message with the given fields.
 func Error(args ...interface{}) {
-	logger.Error(args...)
+	l.Error(args...)
 }
 
-// Fatalf logs a fatal message with the given format and arguments, then exits the application.
-func Fatalf(template string, args ...interface{}) {
-	logger.Fatalf(template, args...)
+// Fatal logs a fatal message, then exits the application.
+func Fatal(args ...interface{}) {
+	l.Fatal(args...)
 }

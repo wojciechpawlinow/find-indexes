@@ -7,16 +7,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func mockLoadConfigSuccess() (*config, error) {
+func mockLoadConfig() (*Config, error) {
 	mockViper := viper.New()
 	mockViper.Set("port", 8080)
 	mockViper.Set("log_level", "debug")
 
-	return &config{mockViper}, nil
+	return &Config{mockViper}, nil
 }
 
 func TestNewConfig(t *testing.T) {
-	loadConfig = mockLoadConfigSuccess
+	loadConfig = mockLoadConfig
 	defer func() { loadConfig = defaultLoadConfig }()
 
 	cfg, err := New()

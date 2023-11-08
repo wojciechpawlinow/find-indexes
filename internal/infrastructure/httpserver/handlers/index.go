@@ -5,23 +5,25 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sarulabs/di"
 
 	"github.com/wojciechpawlinow/find-indexes/internal/application/service"
 )
 
-type IndexFinderHTTPHandler struct {
-	ctn di.Container
+type IndexHTTPHandler struct {
+	Srv service.IndexPort
 }
 
 const (
 	directMatch   = "exact"
-	indirectMatch = "proximity"
+	indirectMatch = "near"
 )
 
-func (h *IndexFinderHTTPHandler) FindIndex(c *gin.Context) {
+// FindIndex is an HTTP controller method for finding an index by value
+// value - url param, integer 0 - 1000000
+func (h *IndexHTTPHandler) FindIndex(c *gin.Context) {
 	vParam := c.Param("value")
 
+	// basic validation
 	v, err := strconv.Atoi(vParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "value must be an integer"})
@@ -33,9 +35,8 @@ func (h *IndexFinderHTTPHandler) FindIndex(c *gin.Context) {
 		return
 	}
 
-	s := h.ctn.Get("service-index").(service.IndexFinderPort)
-
-	result, nonDirect, err := s.Find(c.Request.Context(), v)
+	// pass the request further to the application layer
+	result, nonDirect, err := h.Srv.FindByValue(c.Request.Context(), v)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err})
 	}

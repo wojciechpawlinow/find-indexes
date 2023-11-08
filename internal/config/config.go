@@ -10,18 +10,19 @@ type Provider interface {
 	GetString(key string) string
 }
 
-type config struct {
+type Config struct {
 	*viper.Viper
 }
 
 var (
+	_             Provider = (*Config)(nil)
 	once          sync.Once
-	defaultConfig *config
+	defaultConfig *Config
 	err           error
 	loadConfig    = defaultLoadConfig
 )
 
-func defaultLoadConfig() (*config, error) {
+func defaultLoadConfig() (*Config, error) {
 	v := viper.New()
 	v.SetConfigName("config")
 	v.SetConfigType("yaml")
@@ -31,11 +32,12 @@ func defaultLoadConfig() (*config, error) {
 	v.SetDefault("log_level", "info")
 	v.AutomaticEnv()
 
-	err := v.ReadInConfig()
-	return &config{v}, err
+	err = v.ReadInConfig()
+	return &Config{v}, err
 }
 
-func New() (*config, error) {
+// New returns the application configuration.
+func New() (*Config, error) {
 	once.Do(func() {
 		defaultConfig, err = loadConfig()
 	})

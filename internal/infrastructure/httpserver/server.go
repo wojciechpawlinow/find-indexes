@@ -2,6 +2,7 @@ package httpserver
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -10,19 +11,21 @@ import (
 
 	"github.com/wojciechpawlinow/find-indexes/internal/config"
 	"github.com/wojciechpawlinow/find-indexes/internal/infrastructure/httpserver/handlers"
-	"github.com/wojciechpawlinow/find-indexes/pkg/logger"
 )
 
 type Server struct {
 	*http.Server
 }
 
-func Run(cfg config.Provider, ctn di.Container) *Server {
+// Run is a Server constructor that starts the HTTP server in a goroutine and enables routing
+func Run(cfg config.Provider, ctn di.Container, errChan chan error) *Server {
 
-	indexHTTPHandler := ctn.Get("http-index").(*handlers.IndexFinderHTTPHandler)
+	// get handlers
+	indexHandler := ctn.Get("http-index").(*handlers.IndexHTTPHandler) // no interface here, exact dependency
 
+	// define routes
 	router := gin.Default()
-	router.GET("/find/:value", indexHTTPHandler.FindIndex)
+	router.GET("/index/:value", indexHandler.FindIndex)
 
 	s := &Server{
 		&http.Server{
@@ -32,20 +35,17 @@ func Run(cfg config.Provider, ctn di.Container) *Server {
 	}
 
 	go func() {
-		if err := s.Server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			logger.Fatalf("shutting down the server: %s", err)
+		if err := s.Server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			errChan <- err
 		}
 	}()
-	_, _ = fmt.Printf("\nlistening at localhost:%s\n", cfg.GetString("port"))
+
+	_, _ = fmt.Printf("\nan HTTP server listening at: %s\n", cfg.GetString("port"))
 
 	return s
 }
 
-// Shutdown is a Shutdown function overload in order to trigger a different Shutdown hooks
+// Shutdown is a Shutdown function overload
 func (srv *Server) Shutdown(ctx context.Context) error {
-	if err := srv.Server.Shutdown(ctx); err != nil {
-		return err
-	}
-
-	return nil
+	return srv.Server.Shutdown(ctx)
 }
