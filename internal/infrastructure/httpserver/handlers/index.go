@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"fmt"
+	"github.com/wojciechpawlinow/find-indexes/pkg/logger"
 	"net/http"
 	"strconv"
 
@@ -36,14 +38,18 @@ func (h *IndexHTTPHandler) FindIndex(c *gin.Context) {
 		return
 	}
 
+	logger.Debug(fmt.Sprintf("searching for value: %d", v))
+
 	// pass the request further to the application layer
 	idx, value, directMatch, err := h.Srv.FindByValue(c.Request.Context(), v)
 	if err != nil {
 		// most likely empty slice and no data to search through
+		logger.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 	}
 
 	if idx == -1 {
+		logger.Info(fmt.Sprintf("value %d not found", v))
 		c.JSON(http.StatusNotFound, gin.H{"error": errNotFound})
 		return
 	}
@@ -57,6 +63,8 @@ func (h *IndexHTTPHandler) FindIndex(c *gin.Context) {
 	if !directMatch {
 		resp["match"] = closestMatch
 	}
+
+	logger.Info(fmt.Sprintf("value %d found at index %d with exact match(%t)", v, idx, directMatch))
 
 	c.JSON(http.StatusOK, resp)
 }

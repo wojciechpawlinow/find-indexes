@@ -1,13 +1,13 @@
 package container
 
 import (
+	"fmt"
 	"github.com/sarulabs/di"
-
-	"github.com/wojciechpawlinow/find-indexes/internal/infrastructure/file"
 
 	"github.com/wojciechpawlinow/find-indexes/internal/application/service"
 	"github.com/wojciechpawlinow/find-indexes/internal/domain/index"
 	"github.com/wojciechpawlinow/find-indexes/internal/infrastructure/database/memory"
+	"github.com/wojciechpawlinow/find-indexes/internal/infrastructure/file"
 	"github.com/wojciechpawlinow/find-indexes/internal/infrastructure/httpserver/handlers"
 	"github.com/wojciechpawlinow/find-indexes/pkg/logger"
 )
@@ -19,12 +19,15 @@ func New() di.Container {
 		Name: "repo-index",
 		Build: func(ctn di.Container) (interface{}, error) {
 
-			repo := &memory.SliceRepository{
-				Values: &[]int{},
-			}
+			repo := &memory.SliceRepository{Values: &[]int{}}
 
 			// load values to a slice
-			err := file.LoadValuesToSlice("input.txt", repo.Values)
+			i, err := file.LoadValuesToSlice("input.txt", repo.Values)
+			if err != nil {
+				logger.Error(err)
+			} else {
+				logger.Debug(fmt.Sprintf("loaded %d value into a slice", i))
+			}
 
 			return repo, err
 		},
