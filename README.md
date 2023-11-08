@@ -11,6 +11,12 @@ Load the _input.txt_ file (containing sorted numbers from 0 to 1000000) into a s
 In case service is not able to find the index for a given value, it can return an index for any other existing values,
 assuming that conformation is at 10% level.
 
+## Built with
+
+- [gin](https://github.com/gin-gonic/gin) - The web framework used
+- [viper](https://github.com/spf13/viper) - Configuration management
+- [di](https://github.com/sarulabs/di) - Dependency injection framework
+
 ## Usage
 
 ```bash
@@ -59,11 +65,6 @@ make test
 ```bash
 make format
 ```
-
-## Built with
-- [gin](https://github.com/gin-gonic/gin) - The web framework used  
-- [viper](https://github.com/spf13/viper) - Configuration management
-- [di](https://github.com/sarulabs/di) - Dependency injection framework
 
 ## Configuration
 
