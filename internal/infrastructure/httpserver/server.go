@@ -6,8 +6,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sarulabs/di"
 
 	"github.com/wojciechpawlinow/find-indexes/internal/config"
+	"github.com/wojciechpawlinow/find-indexes/internal/infrastructure/httpserver/handlers"
 	"github.com/wojciechpawlinow/find-indexes/pkg/logger"
 )
 
@@ -15,16 +17,16 @@ type Server struct {
 	*http.Server
 }
 
-func Run(c config.Provider) *Server {
+func Run(cfg config.Provider, ctn di.Container) *Server {
+
+	indexHTTPHandler := ctn.Get("http-index").(*handlers.IndexFinderHTTPHandler)
+
 	router := gin.Default()
-	router.GET("/find/:value", func(c *gin.Context) {
-		v := c.Param("value")
-		c.String(http.StatusOK, "%s", v)
-	})
+	router.GET("/find/:value", indexHTTPHandler.FindIndex)
 
 	s := &Server{
 		&http.Server{
-			Addr:    fmt.Sprintf(":%s", c.GetString("port")),
+			Addr:    fmt.Sprintf(":%s", cfg.GetString("port")),
 			Handler: router,
 		},
 	}
@@ -34,7 +36,7 @@ func Run(c config.Provider) *Server {
 			logger.Fatalf("shutting down the server: %s", err)
 		}
 	}()
-	_, _ = fmt.Printf("\nlistening at localhost:%s\n", c.GetString("port"))
+	_, _ = fmt.Printf("\nlistening at localhost:%s\n", cfg.GetString("port"))
 
 	return s
 }

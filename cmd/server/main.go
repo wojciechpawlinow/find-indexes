@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/wojciechpawlinow/find-indexes/internal/config"
+	"github.com/wojciechpawlinow/find-indexes/internal/infrastructure/container"
 	"github.com/wojciechpawlinow/find-indexes/internal/infrastructure/httpserver"
 	"github.com/wojciechpawlinow/find-indexes/pkg/logger"
 )
@@ -24,8 +25,11 @@ func main() {
 	// create logger
 	logger.Setup(cfg)
 
+	// build dependencies
+	ctn := container.New()
+
 	// create and run HTTP server
-	s := httpserver.Run(cfg)
+	s := httpserver.Run(cfg, ctn)
 
 	// wait for interrupt signal to gracefully shut down the server with a timeout of 10 seconds
 	// use a buffered channel to avoid missing signals as recommended for signal.Notify
