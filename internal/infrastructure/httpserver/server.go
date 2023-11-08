@@ -41,7 +41,7 @@ func Run(cfg config.Provider, ctn di.Container, errChan chan error) *Server {
 		}
 	}()
 
-	_, _ = color.New(color.FgHiGreen).Printf("\nan HTTP server listening at: %s\n\n", cfg.GetString("port"))
+	_, _ = color.New(color.FgHiGreen).Printf("\n=> an HTTP server listening at: %s\n\n", cfg.GetString("port"))
 
 	return s
 }

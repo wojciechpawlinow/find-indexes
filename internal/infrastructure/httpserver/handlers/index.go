@@ -14,8 +14,9 @@ type IndexHTTPHandler struct {
 }
 
 const (
-	directMatch   = "exact"
-	indirectMatch = "near"
+	exactMatch   = "exact"
+	closestMatch = "nearest"
+	errNotFound  = "value not found"
 )
 
 // FindIndex is an HTTP controller method for finding an index by value
@@ -30,25 +31,31 @@ func (h *IndexHTTPHandler) FindIndex(c *gin.Context) {
 		return
 	}
 
-	if v <= 0 {
+	if v < 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "value must be greater than zero"})
 		return
 	}
 
 	// pass the request further to the application layer
-	result, nonDirect, err := h.Srv.FindByValue(c.Request.Context(), v)
+	idx, value, directMatch, err := h.Srv.FindByValue(c.Request.Context(), v)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err})
+		// most likely empty slice and no data to search through
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+	}
+
+	if idx == -1 {
+		c.JSON(http.StatusNotFound, gin.H{"error": errNotFound})
+		return
 	}
 
 	resp := gin.H{
-		"index": result,
-		"value": v,
-		"match": directMatch,
+		"index": idx,
+		"value": value,
+		"match": exactMatch,
 	}
 
-	if nonDirect {
-		resp["match"] = indirectMatch
+	if !directMatch {
+		resp["match"] = closestMatch
 	}
 
 	c.JSON(http.StatusOK, resp)

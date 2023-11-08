@@ -8,7 +8,7 @@ import (
 )
 
 type IndexPort interface {
-	FindByValue(ctx context.Context, v int) (int, bool, error)
+	FindByValue(ctx context.Context, v int) (int, int, bool, error)
 }
 
 type IndexService struct {
@@ -18,22 +18,17 @@ type IndexService struct {
 var _ IndexPort = (*IndexService)(nil)
 
 // FindByValue matches the exact value in the storage or the closest one
-func (s *IndexService) FindByValue(ctx context.Context, v int) (int, bool, error) {
+// v - value to find
+// returns:
+//
+//	idx - index of the value,
+//	directMatch - true if the value was found, false if the closest value was returned,
+//	err - error message.
+func (s *IndexService) FindByValue(ctx context.Context, v int) (int, int, bool, error) {
 
 	if v < 0 {
-		return 0, false, errors.New("invalid value range")
+		return -1, -1, false, errors.New("invalid value range")
 	}
 
-	directMatch := true
-
-	i, err := s.Repo.OneByValue(ctx, v)
-	if err != nil {
-		directMatch = false
-		i, err = s.Repo.OneByValue(ctx, v-(v*10/100))
-		if err != nil {
-			i, err = s.Repo.OneByValue(ctx, v+(v*10/100))
-		}
-	}
-
-	return i, directMatch, err
+	return s.Repo.OneByValue(ctx, v)
 }

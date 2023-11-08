@@ -3,6 +3,8 @@ package container
 import (
 	"github.com/sarulabs/di"
 
+	"github.com/wojciechpawlinow/find-indexes/internal/infrastructure/file"
+
 	"github.com/wojciechpawlinow/find-indexes/internal/application/service"
 	"github.com/wojciechpawlinow/find-indexes/internal/domain/index"
 	"github.com/wojciechpawlinow/find-indexes/internal/infrastructure/database/memory"
@@ -16,10 +18,18 @@ func New() di.Container {
 	if err := builder.Add(di.Def{
 		Name: "repo-index",
 		Build: func(ctn di.Container) (interface{}, error) {
-			return &memory.SliceRepository{}, nil
+
+			repo := &memory.SliceRepository{
+				Values: &[]int{},
+			}
+
+			// load values to a slice
+			err := file.LoadValuesToSlice("input.txt", repo.Values)
+
+			return repo, err
 		},
 	}); err != nil {
-		logger.Error(err)
+		logger.Fatal(err) // crucial functionality, we can't continue without it
 	}
 
 	if err := builder.Add(di.Def{
