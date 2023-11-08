@@ -2,13 +2,13 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/wojciechpawlinow/find-indexes/pkg/logger"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/wojciechpawlinow/find-indexes/internal/application/service"
+	"github.com/wojciechpawlinow/find-indexes/pkg/logger"
 )
 
 type IndexHTTPHandler struct {

@@ -21,8 +21,10 @@ type Server struct {
 // Run is a Server constructor that starts the HTTP server in a goroutine and enables routing
 func Run(cfg config.Provider, ctn di.Container, errChan chan error) *Server {
 
-	// get handlers
-	indexHandler := ctn.Get("http-index").(*handlers.IndexHTTPHandler) // no interface here, exact dependency
+	// get handler from DI
+	// retrieve the pointer instead of interface
+	// as that handler does not need to have an interface
+	indexHandler := ctn.Get("http-index").(*handlers.IndexHTTPHandler) // it would be an interface
 
 	// define routes
 	router := gin.Default()

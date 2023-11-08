@@ -10,6 +10,7 @@ import (
 	"github.com/fatih/color"
 )
 
+// LoadValuesToSlice function reads the file and append values to the slice
 func LoadValuesToSlice(path string, sPtr *[]int) (int, error) {
 	if sPtr == nil {
 		return 0, errors.New("slice pointer is nil")

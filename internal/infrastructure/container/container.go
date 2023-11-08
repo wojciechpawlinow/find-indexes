@@ -2,6 +2,7 @@ package container
 
 import (
 	"fmt"
+
 	"github.com/sarulabs/di"
 
 	"github.com/wojciechpawlinow/find-indexes/internal/application/service"
