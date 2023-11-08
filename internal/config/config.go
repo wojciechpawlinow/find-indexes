@@ -36,8 +36,8 @@ func defaultLoadConfig() (*Config, error) {
 	return &Config{v}, err
 }
 
-// New returns the application configuration.
-func New() (*Config, error) {
+// Load returns the application configuration.
+func Load() (*Config, error) {
 	once.Do(func() {
 		defaultConfig, err = loadConfig()
 	})

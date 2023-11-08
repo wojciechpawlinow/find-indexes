@@ -2,11 +2,12 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/fatih/color"
 
 	"github.com/wojciechpawlinow/find-indexes/internal/config"
 	"github.com/wojciechpawlinow/find-indexes/internal/infrastructure/container"
@@ -17,9 +18,9 @@ import (
 func main() {
 
 	// load configuration from a file or fallback to defaults
-	cfg, err := config.New()
+	cfg, err := config.Load()
 	if err != nil {
-		fmt.Println("=> default configuration loaded")
+		_, _ = color.New(color.FgYellow).Printf("\n=> no configuration file found, using defaults\n\n")
 	}
 
 	// create logger

@@ -3,11 +3,14 @@ module github.com/wojciechpawlinow/find-indexes
 go 1.21.3
 
 require (
+	github.com/fatih/color v1.16.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/spf13/viper v1.17.0
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/zap v1.26.0
 )
+
+require github.com/mattn/go-colorable v0.1.13 // indirect
 
 require (
 	github.com/bytedance/sonic v1.10.2 // indirect

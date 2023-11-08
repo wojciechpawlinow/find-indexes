@@ -19,7 +19,7 @@ func TestNewConfig(t *testing.T) {
 	loadConfig = mockLoadConfig
 	defer func() { loadConfig = defaultLoadConfig }()
 
-	cfg, err := New()
+	cfg, err := Load()
 
 	assert.NoError(t, err)
 	assert.NotNil(t, cfg)
